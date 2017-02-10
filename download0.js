@@ -2,7 +2,7 @@ const fs = require('fs')
 const download = require('download')
 
 
-var index = 0 // 定义从第几个开始下载
+var index // 定义从第几个开始下载
 var nowDownNum = 0 // 当前同时下载的文件数量
 var doneDownNum = Number(fs.readFileSync('doneDownNum.txt','utf8')); // 下载完成的数量
 
@@ -11,6 +11,8 @@ fs.exists('doneDownNum.txt', function(exists){
     if(exists){
         doneDownNum = Number(fs.readFileSync('doneDownNum.txt','utf8'));
         index = doneDownNum
+    }else{
+        index = 0
     }
 });
 
@@ -30,14 +32,14 @@ fs.exists('imagesFile.json', function(exists){
 function downloadImg(URL,downStat){
     nowDownNum += 1 // 每次开始下载就加一
     var ImgName = URL.split('%20')[2] + '.' + URL.split('.')[URL.split('.').length-1] //定义下载的文件名
-    console.log(downStat + ImgName);
+    console.log(downStat + ImgName + '       ' + (index + 1) + '/' + imageLinks.length);
     download(URL).pipe(fs.createWriteStream('getImages/'+ImgName)).on('close',function(){
         var imageSize = fs.statSync('getImages/'+ImgName).size
         if(imageSize < 2048){
             downloadImg(URL,'再次下载: ')
             return
         }
-        console.log('完成下载' + ImgName)
+        console.log('完成下载: ' + ImgName)
         nowDownNum -= 1 // 每次完成下载就减一
         doneDownNum += 1 // 每次完成下载就加一
         index += 1
@@ -50,7 +52,7 @@ function downloadImg(URL,downStat){
             })
         }
     })
-    if(nowDownNum < 10){ //定义当前可同时下载的文件数量
+    if(nowDownNum < 1){ //定义当前可同时下载的文件数量
         index += 1
         if(index < imageLinks.length){downloadImg(imageLinks[index],'开始下载: ')}
     }
