@@ -1,0 +1,6 @@
+.DS_Store
+node_modules/
+imagesListFile.json
+imagesFile.json
+errorFile.json
+doneDownNum.txt

@@ -1,0 +1,17 @@
+{
+  "name": "img",
+  "version": "1.0.0",
+  "description": "",
+  "main": "imagefile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jhin",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.0.1",
+    "crawler": "^1.0.2",
+    "download": "^5.0.3",
+    "request": "^2.79.0"
+  }
+}
