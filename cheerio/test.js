@@ -64,15 +64,43 @@ function download(options){
         }
     },encoding);
 }
+function spliceURL(options){
+    if(!options)return null;
+    if(options.url.indexOf('https://')==0)return options.url;
+    if(options.url.indexOf('http://')==0)return options.url;
+    if(options.url.indexOf('//')==0)return options.scheme+options.url;
+    if(options.url.indexOf('/')==0)return options.scheme+"://"+options.host+options.url;
+    if(options.url.indexOf('../')==0){
+        var arr=options.path.split('/');
+        arr.shift();arr.pop();
+        var len=arr.length;
+        var str='';
+        for(var i=0;i<len;i++){
+            if(options.url.indexOf('../')==0){
+                options.url=options.url.replace('../','');
+                arr.pop();
+            }
+        }
+        while(options.url.indexOf('../')==0){
+            options.url=options.url.replace('../','');
+        }
+        if(arr.length==0)return options.scheme+"://"+options.host+'/'+options.url;
+        if(arr.length==1)return options.scheme+"://"+options.host+'/'+arr[0]+'/'+options.url;
+        return options.scheme+"://"+options.host+'/'+arr.join('/')+'/'+options.url;
+    }
+    return options.scheme+"://"+options.host+options.path+options.url;
+}
 
-getWebData('https://github.com/cheeriojs/cheerio',function(data,req){
+getWebData('http://192.168.2.159:3000/',function(data,req){
     if(data){
         var $ = cheerio.load(data),arr = $('img'),count = arr.length,currentNum = 0,load = 0,done = 0;
         var loop = function(){
             currentNum+=1;
             load+=1;
+            req.url = arr.eq(currentNum-1).attr('src');
+            console.log(req);
             download({
-                url:arr.eq(currentNum-1).attr('src'),
+                url:spliceURL(req),
                 path:'images',
                 callback:function(res){
                     done++;
