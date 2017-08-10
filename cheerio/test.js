@@ -10,8 +10,8 @@ function getWebData(url,callback,encoding){
         var arr = res.req.path.split('/');
         arr[arr.length-1]='';
         var req = {
-            scheme:url.split('://')[0],
-            host:res.socket._host,
+            scheme:res.req.agent.protocol,
+            host:res.req._headers.host,
             path:arr.join('/')
         }
         if(encoding)res.setEncoding(encoding);
@@ -69,7 +69,7 @@ function spliceURL(options){
     if(options.url.indexOf('https://')==0)return options.url;
     if(options.url.indexOf('http://')==0)return options.url;
     if(options.url.indexOf('//')==0)return options.scheme+options.url;
-    if(options.url.indexOf('/')==0)return options.scheme+"://"+options.host+options.url;
+    if(options.url.indexOf('/')==0)return options.scheme+"//"+options.host+options.url;
     if(options.url.indexOf('../')==0){
         var arr=options.path.split('/');
         arr.shift();arr.pop();
@@ -84,14 +84,14 @@ function spliceURL(options){
         while(options.url.indexOf('../')==0){
             options.url=options.url.replace('../','');
         }
-        if(arr.length==0)return options.scheme+"://"+options.host+'/'+options.url;
-        if(arr.length==1)return options.scheme+"://"+options.host+'/'+arr[0]+'/'+options.url;
-        return options.scheme+"://"+options.host+'/'+arr.join('/')+'/'+options.url;
+        if(arr.length==0)return options.scheme+"//"+options.host+'/'+options.url;
+        if(arr.length==1)return options.scheme+"//"+options.host+'/'+arr[0]+'/'+options.url;
+        return options.scheme+"//"+options.host+'/'+arr.join('/')+'/'+options.url;
     }
-    return options.scheme+"://"+options.host+options.path+options.url;
+    return options.scheme+"//"+options.host+options.path+options.url;
 }
 
-getWebData('http://192.168.2.159:3000/',function(data,req){
+getWebData('http://192.168.2.159:3000/audio.html',function(data,req){
     if(data){
         var $ = cheerio.load(data),arr = $('img'),count = arr.length,currentNum = 0,load = 0,done = 0;
         var loop = function(){
@@ -113,7 +113,7 @@ getWebData('http://192.168.2.159:3000/',function(data,req){
             })
             if(currentNum < count && load < 5)loop();
         }
-        loop();
+        // loop();
     }else{
         console.log("error");
     }
